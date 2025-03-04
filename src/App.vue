@@ -1,24 +1,12 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue';
+import Weather from './components/Weather.vue';
 </script>
 
 <template>
   <div class="h-screen flex items-center justify-center bg-gray-200">
     <h1 class="text-4xl font-bold text-red-500">Tailwind is working! 🚀</h1>
   </div>
+  <Weather />
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+<style scoped></style>
