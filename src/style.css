@@ -1,1 +1,7 @@
 @import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+@theme {
+  --color-gris: #202733;
+  --color-green: #53ffaa;
+}

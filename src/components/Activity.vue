@@ -24,7 +24,7 @@ watch(
     if (newWeather && newMood) {
       console.log('✅ Activity.vue - Valid weather and mood detected!');
 
-      prompt.value = `Based on the ${newWeather} weather and the ${newMood} user's mood, suggest an activity in 2 sentences.`;
+      prompt.value = `Based on the ${newWeather} weather and the ${newMood} user's mood, suggest an activity in 1 sentence.`;
 
       console.log('🛠️ Activity.vue - Prompt set:', prompt.value);
 
@@ -103,17 +103,13 @@ async function fetchActivity() {
 <template>
   <div id="activity-container">
     <div>
-      <h2 class="text-xl font-bold">Activity Suggestion</h2>
       <!-- Show the loading state while waiting for OpenAI response -->
       <p v-if="!activity && weather && mood" class="text-gray-500">
         Generating activity based on your mood and weather...
       </p>
 
       <!-- Show the suggested activity -->
-      <p
-        v-if="activity"
-        class="mt-4 p-4 bg-green-100 border border-green-400 rounded"
-      >
+      <p v-if="activity" class="mt-4 p-4 border-green rounded text-white">
         {{ activity }}
       </p>
     </div>
