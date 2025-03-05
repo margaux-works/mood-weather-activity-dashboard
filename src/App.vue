@@ -21,23 +21,22 @@ const updateMood = (mood) => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col items-center bg-gris text-white p-6">
+  <div class="min-h-screen flex flex-col items-center bg-gris text-white px-6">
     <!-- Main Title -->
-    <h1 class="text-4xl text-white mt-10 mb-12 font-[Poppins]">
+    <h1 class="text-4xl text-[#E3E8EF] mt-10 mb-12 font-[Poppins] text-center">
       Your Personalized Activity Generator
     </h1>
 
     <Weather @updateWeather="updateWeather" />
     <!-- Mood Section -->
     <div class="w-full max-w-3xl">
-      <h2 class="text-2xl text-center mb-6">How do you feel today?</h2>
+      <h2 class="text-2xl text-[#E3E8EF] text-center mb-6">
+        How do you feel today?
+      </h2>
       <Mood @updateMood="updateMood" />
     </div>
     <!-- Activity Section -->
     <div class="w-full max-w-3xl mt-10">
-      <h2 class="text-md mb-4 text-center text-green uppercase tracking-widest">
-        Activity of the day
-      </h2>
       <Activity :weather="weather" :mood="selectedMood" />
     </div>
   </div>

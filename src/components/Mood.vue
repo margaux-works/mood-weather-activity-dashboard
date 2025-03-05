@@ -12,10 +12,12 @@ const moods = ref([
   { name: 'Sad', emoji: '🌧️' },
   { name: 'Angry', emoji: '🔥' },
   { name: 'Sick', emoji: '🤒' },
+  { name: 'Lazy', emoji: '🦥' },
   { name: 'Frustrated', emoji: '💢' },
   { name: 'Calm', emoji: '🌿' },
   { name: 'Energetic', emoji: '⚡' },
   { name: 'Party Mood', emoji: '💃' },
+  { name: 'Inspired', emoji: '🌠' },
   { name: 'Happy', emoji: '🌻' },
   { name: 'Restless', emoji: '🌪️' },
 ]);
@@ -31,7 +33,7 @@ const selectMood = (mood) => {
 <template>
   <div
     id="mood-container"
-    class="grid grid-cols-3 md:grid-cols-4 gap-2 w-full max-w-2xl"
+    class="grid grid-cols-3 md:grid-cols-4 gap-2 w-full max-w-2xl mx-auto justify-center text-center"
   >
     <!-- v-for to loop through moods and display each -->
     <p

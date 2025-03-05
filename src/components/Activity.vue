@@ -57,7 +57,7 @@ async function fetchActivity() {
       {
         role: 'system',
         content:
-          'You are a helpful assistant who suggests activities to do based on the weather and mood of the user. Activities should be original and specific. Use cultural & trendy references.',
+          'You are a helpful assistant who suggests activities to do based on the weather and mood of the user. Activities should be original and specific.',
       },
       {
         role: 'user',
@@ -101,17 +101,32 @@ async function fetchActivity() {
 </script>
 
 <template>
-  <div id="activity-container">
-    <div>
-      <!-- Show the loading state while waiting for OpenAI response -->
-      <p v-if="!activity && weather && mood" class="text-gray-500">
-        Generating activity based on your mood and weather...
-      </p>
+  <div
+    class="bg-grisLight text-white p-6 rounded-lg shadow-lg w-full max-w-2xl text-center mt-8 mx-auto justify-center"
+  >
+    <!-- Title -->
+    <h3 class="text-md mb-4 text-center text-green uppercase tracking-widest">
+      Suggestion of the Day
+    </h3>
 
-      <!-- Show the suggested activity -->
-      <p v-if="activity" class="mt-4 p-4 border-green rounded text-white">
-        {{ activity }}
-      </p>
+    <!-- Dynamic Messages -->
+    <p v-if="!props.mood" class="text-gray-400 mt-4">
+      Select a mood and I will suggest an activity for you.
+    </p>
+
+    <p v-else-if="loading" class="text-gray-300 mt-4 animate-pulse">
+      Generating activity based on your mood and weather...
+    </p>
+
+    <p v-else class="text-xl mt-4 leading-relaxed">
+      {{ activity }}
+    </p>
+
+    <!-- Decorative Separator -->
+    <div
+      class="border-t border-gray-700 mt-6 mx-auto w-2/3 flex items-center justify-center"
+    >
+      <span class="bg-grisLight px-2 -mt-3 text-xl text-gray-400"> 🔮 </span>
     </div>
   </div>
 </template>
