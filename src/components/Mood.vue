@@ -29,21 +29,22 @@ const selectMood = (mood) => {
 </script>
 
 <template>
-  <div id="mood-container" class="flex flex-wrap items-center justify-center">
+  <div
+    id="mood-container"
+    class="grid grid-cols-3 md:grid-cols-4 gap-2 w-full max-w-2xl"
+  >
     <!-- v-for to loop through moods and display each -->
     <p
       v-for="mood in moods"
       :key="mood.name"
-      class="border-2 border-amber-400 p-2 m-1 rounded cursor-pointer"
+      class="border-1 border-green px-4 py-2 text-center rounded cursor-pointer transition-all duration-300"
       @click="selectMood(mood.name)"
-      :class="{ 'bg-amber-400': selectedMood === mood.name }"
+      :class="{
+        'bg-green text-[#202733]': selectedMood === mood.name,
+        'hover:bg-green hover:text-gris': selectedMood !== mood.name,
+      }"
     >
       {{ mood.emoji }} {{ mood.name }}
     </p>
   </div>
-
-  <!-- use v-if to display selectedMood when chosen -->
-  <p v-if="selectedMood" class="mt-4 text-lg font-semibold text-blue-500">
-    You selected: {{ selectedMood }}
-  </p>
 </template>
