@@ -24,13 +24,20 @@ watch(
     if (newWeather && newMood) {
       console.log('✅ Activity.vue - Valid weather and mood detected!');
 
-      // update prompt
-      prompt.value = `Based on the ${newWeather} weather and the ${newMood} user's mood, suggest an activity.`;
+      prompt.value = `Based on the ${newWeather} weather and the ${newMood} user's mood, suggest an activity in 2 sentences.`;
 
-      await fetchActivity();
+      console.log('🛠️ Activity.vue - Prompt set:', prompt.value);
+
+      // ✅ Ensure prompt is valid before calling fetchActivity()
+      if (prompt.value.trim() !== '') {
+        console.log('🚀 Activity.vue - Calling fetchActivity()...'); // Debug log before calling API
+        await fetchActivity();
+      } else {
+        console.error('❌ Activity.vue - Prompt is empty! Skipping API call.');
+      }
     } else {
       console.log(
-        '❌ Activity.vue - Waiting for valid weather and mood data...'
+        '⚠️ Activity.vue - Waiting for valid weather and mood data...'
       );
     }
   }
@@ -43,51 +50,48 @@ async function fetchActivity() {
   ); // Debug log
 
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-  const apiURL = 'https://api.openai.com/v1/completions';
+  const apiURL = 'https://api.openai.com/v1/chat/completions';
+  const requestBody = JSON.stringify({
+    model: 'gpt-4o-mini',
+    messages: [
+      {
+        role: 'system',
+        content:
+          'You are a helpful assistant who suggests activities to do based on the weather and mood of the user. Activities should be original and specific. Use cultural & trendy references.',
+      },
+      {
+        role: 'user',
+        content: prompt.value,
+      },
+    ],
+    max_tokens: 100,
+  });
+
+  console.log('🛠️ Activity.vue - Final JSON Request Body:', requestBody); // Debug log
+
   try {
     const response = await fetch(apiURL, {
       method: 'POST',
       headers: {
+        Accept: 'application/json',
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are a helpful assistant who suggests activities to do based on the weather and mood of the user. Activities should be original and specific. Use cultural & trendy references.',
-          },
-          {
-            role: 'user',
-            content: prompt.value,
-          },
-        ],
-        max_tokens: 100,
-      }),
+      body: requestBody,
     });
-    console.log('API Response received:', response.status); // Check if API responds
+
+    console.log('✅ Activity.vue - API Response received:', response.status); // Check if API responds
 
     const data = await response.json();
+
     if (!response.ok) {
       console.error('❌ Activity.vue - API Error:', data.error);
-
-      // Handle insufficient quota error
-      if (data.error?.code === 'insufficient_quota') {
-        activity.value =
-          'You have reached your OpenAI API limit. Please check your billing details or wait for the next reset.';
-        return;
-      }
-
       throw new Error(
         `API Error: ${data.error?.message || response.statusText}`
       );
-    } else if (response.ok) {
     }
-    console.log('OpenAI Data:', data); //  Log full response
-
-    activity.value = data.choices[0].text.trim();
+    console.log('✅ Activity.vue - OpenAI Response:', data); // Debug log to check response content
+    activity.value = data.choices[0].message.content.trim();
   } catch (error) {
     console.error('❌ Activity.vue - Error fetching activity:', error);
     activity.value =
