@@ -8,6 +8,8 @@ The **Mood-Based Weather Dashboard** is a web application that suggests activiti
 - User mood input to personalize activity suggestions.
 - AI (OpenAI API) to recommend activities tailored to weather and mood.
 
+Live site [here](https://margaux-works.github.io/mood-weather-activity-dashboard/)
+
 ## Features
 
 - Fetches real-time weather data based on user location.
