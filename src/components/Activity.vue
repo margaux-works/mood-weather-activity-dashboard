@@ -5,120 +5,97 @@ const props = defineProps(['weather', 'mood']); // accept props from parent
 
 // reactive variable
 const activity = ref('');
-const prompt = ref('');
+const isLoading = ref(false);
 
-// Debugging logs
-console.log('⏳ Activity.vue - Received weather prop:', props.weather);
-console.log('⏳ Activity.vue - Received mood prop:', props.mood);
-
-// watch for changes of weather and mood
+// Watch for changes in mood and weather to fetch activity
 watch(
   [() => props.weather, () => props.mood],
   async ([newWeather, newMood]) => {
-    console.log(
-      '✅ Activity.vue - Watch triggered! New values:',
-      newWeather,
-      newMood
-    );
+    if (!newWeather || !newMood) return;
 
-    if (newWeather && newMood) {
-      console.log('✅ Activity.vue - Valid weather and mood detected!');
+    isLoading.value = true; // Show loading animation
 
-      prompt.value = `Based on the ${newWeather} weather and the ${newMood} user's mood, suggest an activity in 1 sentence.`;
+    setTimeout(async () => {
+      try {
+        const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+        const apiURL = 'https://api.openai.com/v1/chat/completions';
+        const response = await fetch(apiURL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o',
+            messages: [
+              {
+                role: 'system',
+                content:
+                  'You are a helpful assistant who suggests activities to do based on the weather and mood of the user. Activities should be original and specific and fit in one sentence.',
+              },
+              {
+                role: 'user',
+                content: `Based on the ${newWeather} weather and the ${newMood} user's mood, suggest an activity.`,
+              },
+            ],
+            max_tokens: 100,
+          }),
+        });
 
-      console.log('🛠️ Activity.vue - Prompt set:', prompt.value);
-
-      // ✅ Ensure prompt is valid before calling fetchActivity()
-      if (prompt.value.trim() !== '') {
-        console.log('🚀 Activity.vue - Calling fetchActivity()...'); // Debug log before calling API
-        await fetchActivity();
-      } else {
-        console.error('❌ Activity.vue - Prompt is empty! Skipping API call.');
+        const data = await response.json();
+        activity.value =
+          data.choices[0]?.message?.content ||
+          '⚠️ Sorry, we couldn’t generate an activity at this moment.';
+      } catch (error) {
+        activity.value =
+          '⚠️ Sorry, we couldn’t generate an activity at this moment.';
+      } finally {
+        isLoading.value = false; // Hide loading spinner after fetching
       }
-    } else {
-      console.log(
-        '⚠️ Activity.vue - Waiting for valid weather and mood data...'
-      );
-    }
+    }, 1000); // 1-second delay to show loading animation
   }
 );
-
-async function fetchActivity() {
-  console.log(
-    '✅ Activity.vue  - Fetching activity with prompt:',
-    prompt.value
-  ); // Debug log
-
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-  const apiURL = 'https://api.openai.com/v1/chat/completions';
-  const requestBody = JSON.stringify({
-    model: 'gpt-4o-mini',
-    messages: [
-      {
-        role: 'system',
-        content:
-          'You are a helpful assistant who suggests activities to do based on the weather and mood of the user. Activities should be original and specific.',
-      },
-      {
-        role: 'user',
-        content: prompt.value,
-      },
-    ],
-    max_tokens: 100,
-  });
-
-  console.log('🛠️ Activity.vue - Final JSON Request Body:', requestBody); // Debug log
-
-  try {
-    const response = await fetch(apiURL, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: requestBody,
-    });
-
-    console.log('✅ Activity.vue - API Response received:', response.status); // Check if API responds
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error('❌ Activity.vue - API Error:', data.error);
-      throw new Error(
-        `API Error: ${data.error?.message || response.statusText}`
-      );
-    }
-    console.log('✅ Activity.vue - OpenAI Response:', data); // Debug log to check response content
-    activity.value = data.choices[0].message.content.trim();
-  } catch (error) {
-    console.error('❌ Activity.vue - Error fetching activity:', error);
-    activity.value =
-      "⚠️ Sorry, we couldn't generate an activity at this moment. Please try again later.";
-  }
-}
 </script>
 
 <template>
   <div
-    class="bg-grisLight text-white p-6 rounded-lg shadow-lg w-full max-w-2xl text-center mt-8 mx-auto justify-center"
+    class="bg-grisLight text-white p-6 rounded-lg shadow-lg w-full max-w-2xl text-center mt-8 mx-auto justify-center min-h-[200px]"
   >
-    <!-- Title -->
-    <h3 class="text-md mb-4 text-center text-green uppercase tracking-widest">
+    <p class="text-md mb-4 text-center text-green uppercase tracking-widest">
       Suggestion of the Day
-    </h3>
+    </p>
 
     <!-- Dynamic Messages -->
     <p v-if="!props.mood" class="text-gray-400 mt-4">
       Select a mood and I will suggest an activity for you.
     </p>
 
-    <p v-else-if="loading" class="text-gray-300 mt-4 animate-pulse">
-      Generating activity based on your mood and weather...
-    </p>
+    <!-- Loading Spinner -->
+    <div v-if="isLoading" class="flex justify-center items-center mt-4">
+      <svg
+        class="animate-spin h-6 w-6 text-green"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V2a10 10 0 00-10 10h2zm2 5.291A8.001 8.001 0 014 12H2a10.001 10.001 0 008 9.874v-2.083A8.003 8.003 0 016 17.291z"
+        ></path>
+      </svg>
+    </div>
 
-    <p v-else class="text-xl mt-4 leading-relaxed">
+    <!-- (Only hidden while loading) -->
+    <p v-else class="mt-4 text-lg font-semibold text-white">
       {{ activity }}
     </p>
 
