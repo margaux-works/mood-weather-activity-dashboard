@@ -21,10 +21,10 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Inject API Keys as Environment Variables
+      - name: Debug Environment Variables
         run: |
-          echo "VITE_WEATHER_API_KEY is set: [${{ secrets.VITE_WEATHER_API_KEY != '' }}]"
-          echo "VITE_OPENAI_API_KEY is set: [${{ secrets.VITE_OPENAI_API_KEY != '' }}]"
+          if [ -z "$VITE_WEATHER_API_KEY" ]; then echo "❌ VITE_WEATHER_API_KEY is NOT set"; else echo "✅ VITE_WEATHER_API_KEY is set"; fi
+          if [ -z "$VITE_OPENAI_API_KEY" ]; then echo "❌ VITE_OPENAI_API_KEY is NOT set"; else echo "✅ VITE_OPENAI_API_KEY is set"; fi
 
       - name: Build Project
         run: npm run build
