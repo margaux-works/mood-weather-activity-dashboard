@@ -25,6 +25,9 @@ jobs:
         run: |
           echo "VITE_WEATHER_API_KEY=${{ secrets.VITE_WEATHER_API_KEY }}" >> $GITHUB_ENV
           echo "VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }}" >> $GITHUB_ENV
+          echo "🔍 Debug: Checking API keys"
+          echo "🔑 WEATHER_API_KEY: $VITE_WEATHER_API_KEY"
+          echo "🔑 OPENAI_API_KEY: $VITE_OPENAI_API_KEY"
 
       - name: Verify API Keys Are Set
         run: |
